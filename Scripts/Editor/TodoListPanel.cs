@@ -11,21 +11,21 @@ using System.IO;
 public class TodoListPanel : EditorWindow 
 {
 	// the list of categorys
-	public List<Category> categoryList = new List<Category>();
-	Category emptyCategory = new Category("Uncategorised");
+	public static List<Category> categoryList = new List<Category>();
+	static Category emptyCategory = new Category("Uncategorised");
 
-	List<string> categoryNames = new List<string>();
+	static List<string> categoryNames = new List<string>();
 
-	List<bool> toggleCategory = new List<bool>();
+	static List<bool> toggleCategory = new List<bool>();
 
-	List<bool> toggleTasks = new List<bool>();
+	static List<bool> toggleTasks = new List<bool>();
 
 	private bool creatingTask = false;
 
 	private bool creatingCategory = false;
 
-	string newCatName = "New Category";
-	string newTaskName = "New Task";
+	private static string newCatName = "New Category";
+	private static string newTaskName = "New Task";
 	
 	private Vector2 scrollPos = Vector2.zero;
 
@@ -34,13 +34,17 @@ public class TodoListPanel : EditorWindow
 	/// <summary>
 	/// The data path is the root of the assets folder.
 	/// </summary>
-	string dataPath = Application.dataPath + "/Aceade/Todo List";
+	private static string dataPath = Application.dataPath + "/Aceade/Todo List";
 
 	[MenuItem ("Window/Todo List")]
 	public static void ShowWindow()
 	{
 		EditorWindow.GetWindow(typeof(TodoListPanel));
+	}
 
+	static TodoListPanel()
+	{
+		LoadCategories();
 	}
 	
 	void OnGUI()
@@ -223,7 +227,7 @@ public class TodoListPanel : EditorWindow
 	/// <summary>
 	/// Loads the categories.
 	/// </summary>
-	void LoadCategories()
+	static void LoadCategories()
 	{
 		BinaryFormatter bf = new BinaryFormatter();
 		var f = File.Open(dataPath + "/tasks.dat",FileMode.OpenOrCreate );
