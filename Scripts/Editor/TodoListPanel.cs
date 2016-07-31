@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.IO;
 
 /// <summary>
@@ -194,7 +195,6 @@ public class TodoListPanel : EditorWindow
 
 							EditorGUILayout.Space();
 
-
 						}
 					}
 
@@ -221,7 +221,6 @@ public class TodoListPanel : EditorWindow
 		var saveFile = File.Create(dataPath + "/tasks.dat");
 		bf.Serialize(saveFile, categoryList);
 		saveFile.Close();
-//		Debug.Log("Saved the categories");
 	}
 
 	/// <summary>
@@ -229,17 +228,28 @@ public class TodoListPanel : EditorWindow
 	/// </summary>
 	static void LoadCategories()
 	{
-		BinaryFormatter bf = new BinaryFormatter();
-		var f = File.Open(dataPath + "/tasks.dat",FileMode.OpenOrCreate );
-		categoryList = (List<Category>)bf.Deserialize(f);
-		emptyCategory = categoryList[0];
-		toggleCategory.Clear();
-		for (int i = 0 ; i < categoryList.Count; i++)
+		try 
 		{
-			toggleCategory.Add (false);
-			categoryNames.Add (categoryList[i].name);
+			// check if the file exists before doing anything.
+			if (File.Exists(dataPath + "/tasks.dat"))
+			{
+				BinaryFormatter bf = new BinaryFormatter();
+				var f = File.Open(dataPath + "/tasks.dat",FileMode.OpenOrCreate );
+				categoryList = (List<Category>)bf.Deserialize(f);
+				emptyCategory = categoryList[0];
+				toggleCategory.Clear();
+				for (int i = 0 ; i < categoryList.Count; i++)
+				{
+					toggleCategory.Add (false);
+					categoryNames.Add (categoryList[i].name);
+				}
+			}
+
 		}
-		f.Close();
+		catch (SerializationException e)
+		{
+			Debug.LogErrorFormat("Error loading categories: {0}", e);
+		}
 
 	}
 
